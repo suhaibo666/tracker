@@ -12,6 +12,10 @@
 3. **Qwen3.8-Omni tech report 发布**：骨干是 Gated DeltaNet + MoE + QSA 稀疏注意力；256K 原生长度预训练约 2.5T token；采用「dense 注意力 warmup → indexer 蒸馏 → 联合稀疏训练」的四阶段配方。参数量和训练硬件均未披露。
 4. **TensorRT-LLM v1.3.0rc28 发布**：新增 **Router Replay (R3)**，把 MoE 逐 token 的路由结果回传给训练引擎；集成 NCCL-EP 0.2；NVLink one-sided MoE A2A 上限提高到 256 rank；KVCacheManagerV2 默认开启。另外，TE #3282 让 EP dispatch 可以被 CUDA Graph 捕获，并省掉一次 AllGather。
 5. **vllm-ascend 当天合入 44 个 commit**：细粒度 TP 扩展到 MRV2 的 MLP 和 embedding（A3 PD 实测 TPOT 几乎不变，MLP=2 时每 rank 省 0.55 GiB）；MooncakeConnector V2 支持 PCP；block table 只提交变更区间（H2D 从约 2.72 ms/step 降到约 0.14 ms/step）；新增 W4A4C8 量化方案文档。
+6. **【补录】MiMo-V2.6 tech report（9-21 发布，此前漏收）**：
+   - 规模：1.02T/42B-A 与 310B/15B-A 的全模态 MoE。
+   - RL：单次 run 花费 $2.6M，每步约 25K 条轨迹、3B+ token；用 MXFP4 rollout，训练侧做 QDQ 对齐专家权重，并用 R3 回放路由、回放 top-p 候选集。
+   - 稳定性：RL 阶段冻结 router 以防止专家坍缩。
 
 ---
 
@@ -38,6 +42,60 @@
   - 未披露：总参数和激活参数、专家数与路由方式、训练硬件、并行配置、精度。没有 HF 权重也没有 license，看起来只提供 API。
   - 模型本身 9-18 已经上线，这里收录的是 tech report。
 - **对我的意义**：长上下文持续预训练中「先训 indexer 再联合稀疏」的阶段划分，可以直接作为昇腾上 DSA 类稀疏注意力迁移训练的参照。同时要注意 GDN 与稀疏注意力混排后 CP 切分的非对称性：线性层的 state 需要跨 rank 传递，而稀疏注意力需要 gather 被选中的块。
+
+**【补录】MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement（tech report + 开源权重）**｜Xiaomi LLM-Core｜发布时间：HF 仓库创建于 2026-09-21 23:39（北京时间），官方 X 宣布于 9-22 04:51；未上 arXiv｜https://www.alphaxiv.org/abs/2609.mimo-scaling-reinforcement-learning ；PDF：https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf
+
+漏收原因：发布时间比 9-23 那期的窗口起点（9-22 08:00）早约 3 小时，而 9-22 当天没有日报，按旧规则被排除，只记在了 9-23 的运行备注里。
+
+- **架构**：全模态 sparse MoE，SWA（窗口 128 token）与 Global Attention 混合，MoE 不带 shared expert。
+
+  | | Pro | Flash |
+  |---|---|---|
+  | 总参数 / 激活参数 | 1.02T / 42B | 310B / 15B |
+  | 层数（SWA/GA） | 70（60/10） | 48（39/9） |
+  | hidden size | 6144 | 4096 |
+  | 专家数（总/激活） | 384 / 8 | 256 / 8 |
+  | 预训练 token | 30T | 48T |
+
+  投机解码 drafter 是 5 层 DFlash（block diffusion）。HF 权重按 `pp0_ep0..127` 分成 128 个 shard。
+- **预训练 / mid-training**：
+  - 上下文从 256K 扩到 1M。
+  - hidden 矩阵用 **Muown**（带行范数控制的 Muon），替代 AdamW，目的是适应后续的大 batch RL。
+  - mid-training 阶段做 **MXFP4 QAT**。
+- **RL 规模**：
+  - GRPO；每步 1568 个 prompt × 16 条 rollout，约 25K 条轨迹，合计 2.7–3.7B token，单条序列 110–150K token。
+  - 异步 partial rollout，staleness 上限为 4；RL 阶段训练上下文 1M。
+  - 单次 run 用了数千张 GPU，成本约 $2.6M（Pro）和 $0.9M（Flash）。Pro 的成本构成：rollout 43.8%，训练 43.5%，grader 12.7%。
+  - 30 步耗时 123.1 h（Pro）和 81.8 h（Flash）。
+- **训推一致性**：
+  - 训练引擎 Megatron-LM，推理引擎 SGLang；rollout 时专家权重用 MXFP4（vLLM Humming GEMM）。
+  - 每次参数更新后，按 Humming kernel 的数值约束对专家做 QDQ，保证两端权重完全一致。
+  - 用 **R3** 回放路由；**回放 top-p 候选集**，并在其内部重新归一化 logprob。回传时用固定 shape、全词表宽度的 bitmap，避免 GPU–CPU 同步；top-p=0.97 时平均候选数不到 5。
+- **系统设计**：
+  - **Payload Porter**：控制面只调度元数据，路由记录、top-p 集合和多模态等重载荷只写一次，存入分布式 KV store。每个 TP 组一个 packer，只切出自己 CP window 需要的片段。
+  - **分层 Context Cache**：GPU 生成期间 KV 在 HBM，等待工具期间搬到 pinned host 内存，在 side stream 上换入换出。
+  - **Drafter**：DFlash block-6 在 RL 日志上微调，接受长度比 MTP-3 高 31.3%；FP8 drafter 使单节点吞吐 +10.3%。
+  - **SWA 下的 CP**：只交换 query 能看到的 KV，每层通信量上限是一个窗口大小，与序列长度无关。
+  - 优化器状态常驻 CPU；PG loss、OPD loss 和各项指标融合成一个 kernel。
+- **稳定性**：
+  - **RL 中冻结 router**：不冻结时，Pro 第 9 层的专家负载 CV 从 0.78 恶化到 2.0，峰值负载升到均值的 16 倍，22% 专家变冷；把 router 恢复到 RL 前的参数，负载即恢复正常，而 benchmark 不受影响。冻结后 CV 约 0.7、峰值约 5.5 倍、冷专家约 1%。
+  - 故障统计：
+    - 基础设施故障以 HBM 双比特错误（DBE）为主；
+    - 训练 OOM 来自 micro-batch 内的 EP 负载失衡，单个 EP rank 收到的 token 超过均值 30 倍，最后通过调整并行配置解决；
+    - driver 在打包阶段因 host 内存不足而 OOM。
+- **效果与开源**：
+  - DeepSWE v1.1：Pro 从 58.4 提升到 72.6，Flash 从 48.7 提升到 65.7。
+  - Pro 的最终成绩：OSWorld-Verified 82.0，Toolathlon-Verified 76.9，CyberGym 94.0。
+  - GAR（组内优势重分配）抑制了轮数和长度的膨胀；多 harness 训练让 held-out harness 上的 DeepSWE 从约 50% 提升到 66%。
+  - 开源内容：Pro/Flash 的 RL 权重、MiMo-V2.6-Distill-Qwen-9B、约 7000 个 RL 任务及对应 verifier、训练框架和 mini-harness。
+- **简析**：
+  - 相对 V2-Flash / V2.5 的主要变化：规模扩到 1T 级全模态；RL 从后训练的附属环节变成主要算力投入（单次 run 数百万美元）；训推一致性从 R3 扩展到「QDQ 对齐 + top-p 集合回放」的完整闭环。
+  - 未披露：GPU 型号和确切卡数、训练侧的 TP/PP/EP/CP 具体配置、MFU。多数 benchmark 是内部评测。「self-improvement」只体现在单轮大规模 RL 上，没有展示真正的递归自我改进。
+- **对我的意义**：这是一份迄今最完整的万亿参数 MoE Agentic RL 工程实录，可以直接对照的点有四个：
+  - MXFP4 rollout 配合训练侧 QDQ 对齐专家权重，可以对应昇腾上的 MXFP8/W8A8 rollout；
+  - RL 阶段冻结 router，是一个几乎零成本的稳定性手段；
+  - SWA 下 CP 的通信量上限只取决于窗口大小；
+  - micro-batch 级的 EP 峰值负载（超过均值 30 倍）会导致 OOM，在昇腾万卡 RL 上做显存规划时必须预留这部分余量。
 
 > 其他厂商：窗口内 OpenAI、Anthropic、Google、Meta、xAI、Mistral、DeepSeek、Moonshot、智谱、MiniMax、字节 Seed、腾讯、百度、阶跃、小米、美团、Microsoft、AI2 均未发布新的 LLM 权重或 tech report。非 LLM 发布（Nemotron 3 Diarization 等）见运行备注。
 
@@ -310,6 +368,7 @@
 ## Sources
 
 - Qwen3.8-Omni：https://arxiv.org/abs/2609.25611
+- 【补录】MiMo-V2.6：https://www.alphaxiv.org/abs/2609.mimo-scaling-reinforcement-learning ，https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL
 - 论文：https://arxiv.org/abs/2609.25442 ，https://arxiv.org/abs/2609.26355 ，https://arxiv.org/abs/2609.26621 ，https://arxiv.org/abs/2609.26708 ，https://arxiv.org/abs/2609.25560 ，https://arxiv.org/abs/2609.25624 ，https://arxiv.org/abs/2609.26219 ，https://arxiv.org/abs/2609.25809 ，https://arxiv.org/abs/2609.26300
 - NVIDIA SWE-Serve：https://developer.nvidia.com/blog/how-swe-serve-exposes-the-gap-between-local-tests-and-live-serving/
 - Fireworks Ember-1：https://fireworks.ai/blog/ember-1
@@ -323,6 +382,9 @@
   - 标准 24h 窗口（周四）。
   - 昨天的日报（手动试运行）覆盖到 9-23 13:27（北京时间），与本窗口有约 5.5 小时重叠。重叠部分的条目已按昨天的日报去重（例如 verl #7999、torch_npu !45086 的 Dynamo patch 移除昨天已经报过，今天不再重复）。
   - arXiv 9-23 的 listing（北京时间 9-23 08:00 公布）昨天只收了部分，今天补上了未收录的部分。9-24 的 listing 生成时还没有出来。
+- **遗留项处置**：
+  - 9-23 那期备注中的 **MiMo-V2.6 tech report**：已按用户要求在第 1 节补录（9-24 当天手动更新）。
+  - 同一期备注中的 Grok 4.7、StepFun Step 5 Preview：只提供 API 或预览，不属于重要 Tech Report，不补录。
 - **窗口外、未收录（供参考）**：
   - **阿里云栖 9-22（北京时间）**：平头哥真武 V900（算力是 M890 的 3 倍，216GB 显存，片间 1200 GB/s，支持 FP8/FP4，磐久超节点 2027 Q1 出货）；磐久 AL64 SNPO 光互联超节点（单机 64 卡，可无收敛扩到 1024 卡，51.2T 交换，近封装光）。这两项是昇腾 960 SuperPoD 和灵衢的直接竞品，昨天的日报漏收，建议补读：https://www.ithome.com/1/005/602.htm 。
   - AMD ROCm 博客（9-21/22）：Kimi-K3 on MI350X；GLM-5.2 MXFP4 在 MI355X 上的 prefill CP。
@@ -344,5 +406,5 @@
   - Gitee/GitCode 上 MindSpeed 的 Release 无法确认日期，因此是「未确认」，不等于「没有」。
   - CompKV、2/3 Experts 两篇只读了摘要。
 - **保存结果**：
-  - GitHub：写入 `suhaibo666/tracker` main 分支 `llm-training-daily/llm-training-daily-2026-09-24.md`。
-  - 本地：**失败**。`device_commit_files` 两次都返回「设备未连接到 bridge」（电脑离线），按约定不再重试，没有写入 `/Users/suhaibo/workspace/90-knowledge/llm-monitor/`。可以在电脑上从 GitHub 拉取。
+  - GitHub：写入 `suhaibo666/tracker` main 分支 `llm-training-daily/llm-training-daily-2026-09-24.md`，9-24 补录 MiMo-V2.6 后已更新一次。
+  - 本地：**未写入**。定时运行时 `device_commit_files` 两次都返回「设备未连接」；9-24 手动补录时电脑已在线，但本会话没有 `llm-monitor` 文件夹的写入授权，已发起授权请求，正在等待批准。
