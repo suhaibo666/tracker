@@ -356,4 +356,6 @@
   - lmsys.org/blog、Modal、Anyscale 需 JS 渲染无法抓取；lm-sys.github.io 被 robots 禁止；rocm.blogs.amd.com/blog-index.html 404；Together AI 部分文章无日期；Google Cloud 博客列表页无日期；weibo 与 X 被 robots 禁止；digitimes 403。
   - Gitee/GitCode 上 MindSpeed 系列的 Release 日期无法确认。
   - curl 直连被代理拒绝（CONNECT tunnel failed / 403），所有 HF API 查询改用 WebFetch 完成；WebFetch 经小模型摘要，存在漏项与转述风险。
-- **保存结果**：见文末。
+- **保存结果**：
+  - GitHub：已写入 `suhaibo666/tracker` main 分支 `llm-training-daily/llm-training-daily-2026-10-02.md`（commit `b85658c`）。注：`gh` CLI 与 curl 的写操作被代理拒绝（403），改用 GitHub MCP 工具完成。
+  - 本地：**未写入**。`device_commit_files` 所需的设备桥接在本次运行中掉线，`get_device_info` 两次均返回「设备未连接」，按要求未反复重试。目标路径 `/Users/suhaibo/workspace/90-knowledge/llm-monitor/llm-training-daily-2026-10-02.md` 需手动从 GitHub 拉取，或在电脑在线时重跑本次任务。
