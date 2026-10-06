@@ -222,5 +222,6 @@
   - alphaXiv `get_paper_content` 对 Kolibri（52 万字符）与 HLA（6.9 万字符）均超出单次返回上限，改用子 agent 全文读取后汇总；**正文中的 Kolibri 与 HLA 细节均经子 agent 逐段读取原文得出，但未由本会话逐条复核原文**。
   - OpenRLHF、NCCL、TensorRT-LLM、trl 本期未单独扫描 commit（仅核对 Release 列表）。
 - **保存结果**：
-  - GitHub：已写入 `suhaibo666/tracker` main 分支 `llm-training-daily/llm-training-daily-2026-10-06.md`。注：首次提交误写入占位内容，随后以本文件正文覆盖更新；`gh` CLI 与 curl 的写操作仍被代理拒绝（403），改用 GitHub MCP 工具完成。
-  - 本地：**未写入**。本次运行中设备桥接（`mcp__remote-devices__*`，含 `device_commit_files`）在检索阶段中途断开（系统提示 66 个工具因 MCP server 断连而不可用），按要求未反复重试。目标路径 `/Users/suhaibo/workspace/90-knowledge/llm-monitor/llm-training-daily-2026-10-06.md` 需手动从 GitHub 拉取，或在电脑在线时重跑本次任务。
+  - GitHub：已写入 `suhaibo666/tracker` main 分支 `llm-training-daily/llm-training-daily-2026-10-06.md`。注：首次提交误写入占位内容，随后以正文覆盖更新，本次提交再修正下方"本地"一条的失败原因；`gh` CLI 与 curl 的写操作仍被代理拒绝（403），改用 GitHub MCP 工具完成。
+  - 本地：**未写入**。原因已查明且与"电脑离线"无关——设备桥接在检索阶段中途断开、随后又恢复，`get_device_info` 可正常返回（deviceName `mbp-k5wx7fn4n6-2037-local`，appVersion 2.19675.0），但 **`connectedFolders` 为空**，`device_commit_files` 因此报 "Files can't be written here without a grant"。即本次会话没有任何已连接文件夹，`workspace` 虽存在于 home 目录但未授权给本会话。按要求未反复重试，也未发起 `device_request_folder_access`——无人值守时该授权提示不会有人应答，且授权仅对本会话有效、对后续定时运行无帮助。
+  - **建议的一次性修复**：在该电脑的 Claude 桌面端用「Add folder」把 `/Users/suhaibo/workspace/90-knowledge/llm-monitor`（或其上层 `~/workspace`）加为连接文件夹，之后每日本地备份即可自动完成。在此之前，本地副本请从 GitHub 拉取：目标路径 `/Users/suhaibo/workspace/90-knowledge/llm-monitor/llm-training-daily-2026-10-06.md`。
