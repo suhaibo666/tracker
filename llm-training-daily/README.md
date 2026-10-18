@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-10-18 | [查看日报](llm-training-daily-2026-10-18.md) | DeepSeek1017权重与评测边界；KV/专家scale修复、MoE与异构训练补录 |
 | 2026-10-17 | [查看日报](llm-training-daily-2026-10-17.md) | Dory循环与低精度预训、Beam权重兑现、Hy-Memory；RL效率边界与工程正确性 |
 | 2026-10-16 | [查看日报](llm-training-daily-2026-10-16.md) | Muse Spark Open与Nemotron新报告；预训练、后训练负面结果及核心工程正确性 |
 | 2026-10-15 | [查看日报](llm-training-daily-2026-10-15.md) | 续扫与72小时查漏；模型工件、数值正确性、KV生命周期及预训练研究 |
