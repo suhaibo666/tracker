@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-10-21 | [查看日报](llm-training-daily-2026-10-21.md) | TorchTPU/llm-d1.0、MemT与Glimmer报告；KV正确性、蒸馏和评测纠偏 |
 | 2026-10-20 | [查看日报](llm-training-daily-2026-10-20.md) | M3.1 Flash/Mercury3、Neuron原生PyTorch；训推系统与有损投机边界 |
 | 2026-10-18 | [查看日报](llm-training-daily-2026-10-18.md) | DeepSeek1017权重与评测边界；KV/专家scale修复、MoE与异构训练补录 |
 | 2026-10-17 | [查看日报](llm-training-daily-2026-10-17.md) | Dory循环与低精度预训、Beam权重兑现、Hy-Memory；RL效率边界与工程正确性 |
