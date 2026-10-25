@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-10-25 | [查看日报](llm-training-daily-2026-10-25.md) | Kimi后训练与权重边界；Dolci污染披露、KV/通信正确性与论文补录 |
 | 2026-10-24 | [查看日报](llm-training-daily-2026-10-24.md) | Bolt E4B纯RL与多模态工件；训练显存、低精度/KV正确性及论文补录 |
 | 2026-10-23 | [查看日报](llm-training-daily-2026-10-23.md) | MiniMax权重/IQuest报告；KV与权重寿命修复、低精度边界和形式验证 |
 | 2026-10-22 | [查看日报](llm-training-daily-2026-10-22.md) | Youtu/Flint新权重、KV生命周期修复；长训与低精度边界、Tokenizer版本纠正 |
