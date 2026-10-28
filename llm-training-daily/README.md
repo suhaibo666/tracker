@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-10-28 | [查看日报](llm-training-daily-2026-10-28.md) | LFM3/Ling新工件；低精度训练、KV/投机正确性与Triton3.9迁移边界 |
 | 2026-10-27 | [查看日报](llm-training-daily-2026-10-27.md) | Recycler/ALTO与长上下文；模型工件、异步RL/KV正确性及版本证据更正 |
 | 2026-10-25 | [查看日报](llm-training-daily-2026-10-25.md) | Kimi后训练与权重边界；Dolci污染披露、KV/通信正确性与论文补录 |
 | 2026-10-24 | [查看日报](llm-training-daily-2026-10-24.md) | Bolt E4B纯RL与多模态工件；训练显存、低精度/KV正确性及论文补录 |
