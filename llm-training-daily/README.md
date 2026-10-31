@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-10-31 | [查看日报](llm-training-daily-2026-10-31.md) | 循环/语音/电脑操作新工件；预训练基线纠偏与KV、低精度及训练正确性 |
 | 2026-10-30 | [查看日报](llm-training-daily-2026-10-30.md) | Mistral Large4/MCore0.20；ParaTTT/TIDE与后训练证据、KV及低精度正确性 |
 | 2026-10-29 | [查看日报](llm-training-daily-2026-10-29.md) | PyTorch2.15/TorchTitan0.4发布；优化器与训推同步、低精度/KV正确性及报告新证据 |
 | 2026-10-28 | [查看日报](llm-training-daily-2026-10-28.md) | LFM3/Ling新工件；低精度训练、KV/投机正确性与Triton3.9迁移边界 |
