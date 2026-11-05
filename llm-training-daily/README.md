@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-05 | [查看日报](llm-training-daily-2026-11-05.md) | Kimi 权重与 Ripple 报告；训推对齐、FlashInfer/CUDA 升级及关键更正 |
 | 2026-11-04 | [查看日报](llm-training-daily-2026-11-04.md) | NorthCUA/Hydrogen与优化器证据；训推精度、KV生命周期及评估方法 |
 | 2026-11-03 | [查看日报](llm-training-daily-2026-11-03.md) | Mistral/LongCat技术报告；训推数值一致性、长上下文与状态管理、关键正确性修复 |
 | 2026-11-02 | [查看日报](llm-training-daily-2026-11-02.md) | MFSDP/TP交叉熵与量化新工件；阶段推理策略、确定性及评测退步 |
