@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-08 | [查看日报](llm-training-daily-2026-11-08.md) | Beam 训练报告与 Qwen 模板更新、vLLM Runner V1 移除和 NVMe 正确性 |
 | 2026-11-07 | [查看日报](llm-training-daily-2026-11-07.md) | Cola2 权重与异步 RL；长上下文 KV、低精度正确性及 CANN 补录 |
 | 2026-11-06 | [查看日报](llm-training-daily-2026-11-06.md) | ERNIE 基座与 Inkling 训练披露；TPU 线性注意力、KV 正确性和 vLLM 工件补录 |
 | 2026-11-05 | [查看日报](llm-training-daily-2026-11-05.md) | Kimi 权重与 Ripple 报告；训推对齐、FlashInfer/CUDA 升级及关键更正 |
