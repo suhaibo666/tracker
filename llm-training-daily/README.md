@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-11 | [查看日报](llm-training-daily-2026-11-11.md) | Gemini 4 Carbon 与 H3-Image、801 预训练、TPU/ROCm 大内核与低精度训推 |
 | 2026-11-10 | [查看日报](llm-training-daily-2026-11-10.md) | Claude 5.2 与 LongCat 权重核验、TPU Sync、NCCL 正确性及统一 KV |
 | 2026-11-09 | [查看日报](llm-training-daily-2026-11-09.md) | DSpine 权重与评估口径，Megatron/DeepSpeed 训推改动及昇腾故障追踪 |
 | 2026-11-08 | [查看日报](llm-training-daily-2026-11-08.md) | Beam 训练报告与 Qwen 模板更新、vLLM Runner V1 移除和 NVMe 正确性 |
