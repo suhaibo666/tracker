@@ -8,6 +8,8 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-14 | [查看日报](llm-training-daily-2026-11-14.md) | Duo 与 ZONOS3 报告、反馈预训练与量化对照；llama.cpp 1.0、训练正确性与 NCCL 拆分 |
+| 2026-11-13 | [查看日报](llm-training-daily-2026-11-13.md) | Inkling开放权重与Hydrogen；低精度训练证据、KV生命周期和多后端正确性 |
 | 2026-11-12 | [查看日报](llm-training-daily-2026-11-12.md) | Qwen4-Max 与文心 Flash、投机和长上下文证据、训推一致性与 Neuron 修复 |
 | 2026-11-11 | [查看日报](llm-training-daily-2026-11-11.md) | Gemini 4 Carbon 与 H3-Image、801 预训练、TPU/ROCm 大内核与低精度训推 |
 | 2026-11-10 | [查看日报](llm-training-daily-2026-11-10.md) | Claude 5.2 与 LongCat 权重核验、TPU Sync、NCCL 正确性及统一 KV |
