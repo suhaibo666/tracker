@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-17 | [查看日报](llm-training-daily-2026-11-17.md) | Qwen4-Max 架构披露、MLPerf Agentic RL、MTP 归一化与推理状态修复 |
 | 2026-11-15 | [查看日报](llm-training-daily-2026-11-15.md) | Lara 多语基座与 Decider 抽取；RDMA 权重同步、稀疏更新及端侧和异构推理 |
 | 2026-11-14 | [查看日报](llm-training-daily-2026-11-14.md) | Duo 与 ZONOS3 报告、反馈预训练与量化对照；llama.cpp 1.0、训练正确性与 NCCL 拆分 |
 | 2026-11-13 | [查看日报](llm-training-daily-2026-11-13.md) | Inkling开放权重与Hydrogen；低精度训练证据、KV生命周期和多后端正确性 |
