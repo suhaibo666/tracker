@@ -8,6 +8,7 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-19 | [查看日报](llm-training-daily-2026-11-19.md) | Gemini Neon 与 DaisyRose、异步RL及预训练证据；ROCm10.2、缓存正确性和接口更正 |
 | 2026-11-18 | [查看日报](llm-training-daily-2026-11-18.md) | GPT‑6.2、SenseNova 与 Hy4 Flash，TPU Zero-TIM、训推权重同步及 KV 生命周期 |
 | 2026-11-17 | [查看日报](llm-training-daily-2026-11-17.md) | Qwen4-Max 架构披露、MLPerf Agentic RL、MTP 归一化与推理状态修复 |
 | 2026-11-15 | [查看日报](llm-training-daily-2026-11-15.md) | Lara 多语基座与 Decider 抽取；RDMA 权重同步、稀疏更新及端侧和异构推理 |
