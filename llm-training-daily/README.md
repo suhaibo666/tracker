@@ -8,6 +8,8 @@
 
 | 日期 | 日报 | 说明 |
 |---|---|---|
+| 2026-11-22 | [查看日报](llm-training-daily-2026-11-22.md) | Munin开放后训练与奖励边界；MegaUlysses、TPU路由、量化与缓存正确性、论文补录 |
+| 2026-11-21 | [查看日报](llm-training-daily-2026-11-21.md) | Inkling循环模型与WeMM视频工件；训推权重、KV及低精度正确性和TRT1.3迁移 |
 | 2026-11-20 | [查看日报](llm-training-daily-2026-11-20.md) | Olala混合架构与评测预算纠正；MCore0.20.1、激活卸载、投机与固件正确性 |
 | 2026-11-19 | [查看日报](llm-training-daily-2026-11-19.md) | Gemini Neon 与 DaisyRose、异步RL及预训练证据；ROCm10.2、缓存正确性和接口更正 |
 | 2026-11-18 | [查看日报](llm-training-daily-2026-11-18.md) | GPT‑6.2、SenseNova 与 Hy4 Flash，TPU Zero-TIM、训推权重同步及 KV 生命周期 |
